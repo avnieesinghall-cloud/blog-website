@@ -1,7 +1,7 @@
 {
-  "name": "frontend",
+  "name": "blog-frontend",
+  "version": "1.0.0",
   "private": true,
-  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,20 +9,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@tiptap/extension-heading": "^3.22.5",
-    "@tiptap/extension-image": "^3.22.5",
-    "@tiptap/extension-link": "^3.22.5",
-    "@tiptap/extension-placeholder": "^3.22.5",
-    "@tiptap/react": "^3.22.5",
-    "@tiptap/starter-kit": "^3.22.5",
     "@vitejs/plugin-react": "latest",
-    "axios": "latest",
-    "framer-motion": "^12.38.0",
-    "react": "latest",
-    "react-dom": "latest",
-    "react-hot-toast": "latest",
-    "react-quill": "latest",
-    "react-router-dom": "latest",
-    "vite": "latest"
+    "axios": "^1.7.7",
+    "framer-motion": "^11.11.17",
+    "lucide-react": "^0.468.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.28.0"
+  },
+  "devDependencies": {
+    "vite": "^5.4.11"
   }
 }
