@@ -13,7 +13,7 @@ export default function SinglePost() {
 
   const fetchPost = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/posts/${id}`);
+      const res = await axios.get(`https://blog-backend-rn0w.onrender.com/posts/${id}`);
       setPost(res.data);
     } catch (err) {
       console.log(err);
@@ -29,7 +29,7 @@ export default function SinglePost() {
 
     try {
       const res = await axios.post(
-        `http://localhost:5000/posts/${id}/like`,
+        `https://blog-backend-rn0w.onrender.com/posts/${id}/like`,
         {},
         {
           headers: {
@@ -55,7 +55,7 @@ export default function SinglePost() {
 
     try {
       const res = await axios.post(
-        `http://localhost:5000/posts/${id}/comments`,
+        `https://blog-backend-rn0w.onrender.com/posts/${id}/comments`,
         {
           text: comment,
         },
@@ -83,7 +83,7 @@ export default function SinglePost() {
 
     try {
       const res = await axios.delete(
-        `http://localhost:5000/posts/${id}/comments/${commentId}`,
+        `https://blog-backend-rn0w.onrender.com/posts/${id}/comments/${commentId}`,
         {
           headers: {
             Authorization: token,

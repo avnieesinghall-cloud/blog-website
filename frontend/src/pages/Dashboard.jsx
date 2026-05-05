@@ -9,13 +9,13 @@ function Dashboard() {
   const token = localStorage.getItem("token");
 
   const fetchPosts = async () => {
-    const res = await axios.get("http://localhost:5000/api/posts");
+    const res = await axios.get("https://blog-backend-rn0w.onrender.com/api/posts");
     setPosts(res.data);
   };
 
   const createPost = async () => {
     await axios.post(
-      "http://localhost:5000/api/posts",
+      "https://blog-backend-rn0w.onrender.com/api/posts",
       { title, content },
       {
         headers: { Authorization: `Bearer ${token}` }

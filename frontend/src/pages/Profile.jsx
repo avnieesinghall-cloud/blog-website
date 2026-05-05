@@ -20,7 +20,7 @@ export default function Profile() {
     }
 
     try {
-      const res = await axios.get("http://localhost:5000/my-posts", {
+      const res = await axios.get("https://blog-backend-rn0w.onrender.com/my-posts", {
         headers: { Authorization: token },
       });
 
@@ -33,7 +33,7 @@ export default function Profile() {
 
   const deletePost = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/posts/${id}`, {
+      await axios.delete(`https://blog-backend-rn0w.onrender.com/posts/${id}`, {
         headers: { Authorization: token },
       });
 

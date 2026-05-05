@@ -13,7 +13,7 @@ export default function Home() {
 
   const fetchPosts = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/posts");
+      const res = await axios.get("https://blog-backend-rn0w.onrender.com/posts");
       setPosts(res.data);
     } catch {
       toast.error("Could not fetch posts ❌");
@@ -35,7 +35,7 @@ export default function Home() {
 
     try {
       await axios.post(
-        `http://localhost:5000/posts/${id}/like`,
+        `https://blog-backend-rn0w.onrender.com/posts/${id}/like`,
         {},
         { headers: { Authorization: token } }
       );
@@ -48,7 +48,7 @@ export default function Home() {
 
   const deletePost = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/posts/${id}`, {
+      await axios.delete(`https://blog-backend-rn0w.onrender.com/posts/${id}`, {
         headers: { Authorization: token },
       });
 

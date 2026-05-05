@@ -13,7 +13,7 @@ export default function Register() {
     e.preventDefault();
 
     try {
-      await axios.post("http://localhost:5000/register", {
+      await axios.post("https://blog-backend-rn0w.onrender.com/register", {
         email,
         password,
       });

@@ -212,7 +212,7 @@ app.put("/posts/:id", auth, upload.single("coverImage"), async (req, res) => {
     }
 
     const coverImage = req.file
-      ? `http://localhost:5000/uploads/${req.file.filename}`
+      ? `https://blog-backend-rn0w.onrender.com/uploads/${req.file.filename}`
       : post.coverImage;
 
     const updatedPost = await Post.findByIdAndUpdate(

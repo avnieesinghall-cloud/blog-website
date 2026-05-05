@@ -25,7 +25,7 @@ export default function EditPost() {
 
     const fetchPost = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/posts/${id}`);
+        const res = await axios.get(`https://blog-backend-rn0w.onrender.com/posts/${id}`);
         setTitle(res.data.title);
         setContent(res.data.content);
         setOldImage(res.data.coverImage);
@@ -51,7 +51,7 @@ export default function EditPost() {
     }
 
     try {
-      await axios.put(`http://localhost:5000/posts/${id}`, formData, {
+      await axios.put(`https://blog-backend-rn0w.onrender.com/posts/${id}`, formData, {
         headers: { Authorization: token },
       });
 

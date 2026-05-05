@@ -32,7 +32,7 @@ export default function CreatePost() {
     }
 
     try {
-      await axios.post("http://localhost:5000/posts", formData, {
+      await axios.post("https://blog-backend-rn0w.onrender.com/posts", formData, {
         headers: { Authorization: token },
       });
 
