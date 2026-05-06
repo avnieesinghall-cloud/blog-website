@@ -12,7 +12,10 @@ export default function Home() {
 
   const fetchPosts = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/posts");
+      const res = await axios.get(
+        "https://insightflow-backend-7vjp.onrender.com/posts"
+      );
+
       setPosts(res.data);
     } catch (err) {
       console.log(err);
