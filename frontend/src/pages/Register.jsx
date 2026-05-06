@@ -1,59 +1,76 @@
-import { useState } from "react";
-import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
+import { useState } from "react";
 
 export default function Register() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
   const navigate = useNavigate();
 
-  const register = async (e) => {
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
     e.preventDefault();
 
-    try {
-      await axios.post("https://blog-backend-rn0w.onrender.com/register", {
-        email,
-        password,
-      });
+    localStorage.setItem("token", "demo-token");
+    localStorage.setItem(
+      "user",
+      JSON.stringify({ name: form.name, email: form.email })
+    );
 
-      toast.success("Account created 🚀");
-      navigate("/login");
-    } catch {
-      toast.error("Registration failed ❌");
-    }
+    navigate("/");
   };
 
   return (
-    <div className="auth-box">
-      <h2>Create account</h2>
+    <section className="auth-page">
+      <div className="auth-card">
+        <div className="auth-badge">🚀 Join InsightFlow</div>
 
-      <form className="form" onSubmit={register}>
-        <input
-          className="input"
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+        <h1>Create your account</h1>
+        <p>Start publishing clean, beautiful stories with a premium writing space.</p>
 
-        <input
-          className="input"
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+        <form onSubmit={handleSubmit} className="auth-form">
+          <input
+            type="text"
+            name="name"
+            placeholder="Full name"
+            value={form.name}
+            onChange={handleChange}
+            required
+          />
 
-        <button className="btn btn-primary">Register</button>
-      </form>
+          <input
+            type="email"
+            name="email"
+            placeholder="Email address"
+            value={form.email}
+            onChange={handleChange}
+            required
+          />
 
-      <p>
-        Already have an account? <Link to="/login">Login</Link>
-      </p>
-    </div>
+          <input
+            type="password"
+            name="password"
+            placeholder="Create password"
+            value={form.password}
+            onChange={handleChange}
+            required
+          />
+
+          <button type="submit" className="primary-btn auth-btn">
+            Register
+          </button>
+        </form>
+
+        <p className="auth-switch">
+          Already have an account? <Link to="/login">Login</Link>
+        </p>
+      </div>
+    </section>
   );
 }

@@ -1,72 +1,34 @@
+import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
-import toast from "react-hot-toast";
 
 export default function Home() {
   const [posts, setPosts] = useState([]);
   const [search, setSearch] = useState("");
 
-  const token = localStorage.getItem("token");
-
-  const stripHtml = (html = "") => html.replace(/<[^>]*>?/gm, "");
-
-  const fetchPosts = async () => {
-    try {
-      const res = await axios.get("https://blog-backend-rn0w.onrender.com/posts");
-      setPosts(res.data);
-    } catch {
-      toast.error("Could not fetch posts ❌");
-    }
-  };
-
-  const filteredPosts = posts.filter((post) => {
-    const q = search.toLowerCase();
-
-    return (
-      post.title?.toLowerCase().includes(q) ||
-      post.author?.toLowerCase().includes(q) ||
-      stripHtml(post.content || "").toLowerCase().includes(q)
-    );
-  });
-
-  const likePost = async (id) => {
-    if (!token) return toast.error("Please login first ❌");
-
-    try {
-      await axios.post(
-        `https://blog-backend-rn0w.onrender.com/posts/${id}/like`,
-        {},
-        { headers: { Authorization: token } }
-      );
-
-      fetchPosts();
-    } catch {
-      toast.error("Like failed ❌");
-    }
-  };
-
-  const deletePost = async (id) => {
-    try {
-      await axios.delete(`https://blog-backend-rn0w.onrender.com/posts/${id}`, {
-        headers: { Authorization: token },
-      });
-
-      toast.success("Post deleted ✅");
-      fetchPosts();
-    } catch {
-      toast.error("You cannot delete this post ❌");
-    }
-  };
-
   useEffect(() => {
     fetchPosts();
   }, []);
 
+  const fetchPosts = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/posts");
+      setPosts(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const filteredPosts = posts.filter((post) =>
+    post.title.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
-    <main>
-      <section className="landing-hero">
-        <span className="hero-badge">🚀 Modern blogging for creators</span>
+    <div className="app">
+      <section className="hero">
+        <div className="badge">
+          🚀 Modern blogging for creators
+        </div>
 
         <h1>
           Share ideas with clarity,
@@ -75,105 +37,136 @@ export default function Home() {
         </h1>
 
         <p>
-          InsightFlow is a premium writing space for developers, students,
-          creators, and thinkers to publish stories beautifully.
+          InsightFlow is a premium writing space for developers,
+          students, creators, and thinkers to publish stories beautifully.
         </p>
 
         <div className="hero-actions">
-          <Link to="/create">
-            <button className="btn btn-primary">Start Writing</button>
+          <Link to="/write">
+            <button className="primary-btn">
+              Start Writing
+            </button>
           </Link>
 
-          <a href="#stories">
-            <button className="btn btn-outline">Explore Stories</button>
-          </a>
+          <button className="secondary-btn">
+            Explore Stories
+          </button>
         </div>
       </section>
 
-      <section className="feature-section">
+      <section className="features">
         <div className="feature-card">
           <h3>✍️ Rich Editor</h3>
-          <p>Write formatted posts with headings, links, lists, and styling.</p>
+
+          <p>
+            Write formatted posts with headings, links,
+            lists, and styling.
+          </p>
         </div>
 
         <div className="feature-card">
-          <h3>🖼 Image Upload</h3>
-          <p>Upload beautiful cover images for your stories.</p>
+          <h3>🖼️ Image Upload</h3>
+
+          <p>
+            Upload beautiful cover images for your stories.
+          </p>
         </div>
 
         <div className="feature-card">
           <h3>❤️ Likes & Comments</h3>
-          <p>Engage with stories using likes and discussions.</p>
+
+          <p>
+            Engage with stories using likes and discussions.
+          </p>
         </div>
       </section>
 
-      <section id="stories" className="page-container">
-        <div className="stories-top">
-          <h2 className="section-title">Latest Stories</h2>
+      <section className="stories-section">
+        <h2>Latest Stories</h2>
 
-          <input
-            className="search-input"
-            placeholder="Search stories..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
+        <input
+          type="text"
+          placeholder="Search stories..."
+          className="search-input"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
 
-        {filteredPosts.length === 0 ? (
-          <div className="empty-state">No stories found.</div>
-        ) : (
-          filteredPosts.map((post) => (
-            <article className="card" key={post._id}>
-              {post.coverImage && (
-                <Link to={`/post/${post._id}`}>
-                  <img
-                    src={post.coverImage}
-                    alt={post.title}
-                    className="post-cover"
-                  />
-                </Link>
-              )}
+        <div className="story-grid">
+          {filteredPosts.length > 0 ? (
+            filteredPosts.map((post) => (
+              <Link
+                to={`/post/${post._id}`}
+                className="story-card"
+                key={post._id}
+              >
+                <img
+                  src={
+                    post.coverImage ||
+                    "https://images.unsplash.com/photo-1515879218367-8466d910aaa4"
+                  }
+                  alt={post.title}
+                />
 
-              <Link to={`/post/${post._id}`}>
-                <h2>{post.title}</h2>
+                <div className="story-content">
+                  <h3>{post.title}</h3>
+
+                  <p>
+                    {post.content.slice(0, 100)}...
+                  </p>
+                </div>
               </Link>
+            ))
+          ) : (
+            <>
+              <div className="story-card">
+                <img
+                  src="https://images.unsplash.com/photo-1498050108023-c5249f4df085"
+                  alt=""
+                />
 
-              <p>{stripHtml(post.content).slice(0, 180)}...</p>
+                <div className="story-content">
+                  <h3>Building Modern React Apps</h3>
 
-              <small className="meta">By {post.author}</small>
-
-              <div className="post-stats">
-                <button className="like-btn" onClick={() => likePost(post._id)}>
-                  ❤️ {post.likes?.length || 0}
-                </button>
-
-                <span>💬 {post.comments?.length || 0} comments</span>
+                  <p>
+                    Learn how to structure scalable and elegant React projects.
+                  </p>
+                </div>
               </div>
 
-              <div className="actions">
-                <Link to={`/post/${post._id}`}>
-                  <button className="btn btn-outline">Read More</button>
-                </Link>
+              <div className="story-card">
+                <img
+                  src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3"
+                  alt=""
+                />
 
-                {token && (
-                  <>
-                    <Link to={`/edit/${post._id}`}>
-                      <button className="btn btn-primary">Edit</button>
-                    </Link>
+                <div className="story-content">
+                  <h3>Designing Clean Interfaces</h3>
 
-                    <button
-                      className="btn btn-dark"
-                      onClick={() => deletePost(post._id)}
-                    >
-                      Delete
-                    </button>
-                  </>
-                )}
+                  <p>
+                    Explore modern UI principles used in premium SaaS products.
+                  </p>
+                </div>
               </div>
-            </article>
-          ))
-        )}
+
+              <div className="story-card">
+                <img
+                  src="https://images.unsplash.com/photo-1515879218367-8466d910aaa4"
+                  alt=""
+                />
+
+                <div className="story-content">
+                  <h3>Productivity for Developers</h3>
+
+                  <p>
+                    Systems and habits to improve your coding workflow.
+                  </p>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
       </section>
-    </main>
+    </div>
   );
 }

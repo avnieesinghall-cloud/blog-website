@@ -31,13 +31,11 @@ textarea {
 
 .app {
   min-height: 100vh;
+
   background:
-    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px),
-    radial-gradient(circle at top left, rgba(6,182,212,0.25), transparent 35%),
-    radial-gradient(circle at top right, rgba(59,130,246,0.18), transparent 35%),
-    #020617;
-  background-size: 40px 40px;
+    radial-gradient(circle at top left, rgba(6, 182, 212, 0.26), transparent 34%),
+    radial-gradient(circle at top right, rgba(16, 185, 129, 0.16), transparent 34%),
+    linear-gradient(135deg, #020617 0%, #061827 45%, #031b16 100%);
 }
 
 /* NAVBAR */
@@ -47,7 +45,7 @@ textarea {
   margin: 20px auto;
   padding: 16px 28px;
   border-radius: 26px;
-  background: rgba(15, 23, 42, 0.7);
+  background: rgba(15, 23, 42, 0.72);
   border: 1px solid rgba(255,255,255,0.08);
   backdrop-filter: blur(18px);
   display: flex;
@@ -279,13 +277,48 @@ textarea {
   line-height: 1.7;
 }
 
-/* FOOTER */
+/* LIGHT MODE */
 
-.footer {
-  text-align: center;
-  padding: 40px 20px;
-  color: #64748b;
-  font-size: 14px;
+body.light {
+  background: #eef6ff;
+  color: #0f172a;
+}
+
+body.light .app {
+  background:
+    linear-gradient(rgba(15, 23, 42, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.04) 1px, transparent 1px),
+    radial-gradient(circle at top left, rgba(14, 165, 233, 0.22), transparent 35%),
+    radial-gradient(circle at top right, rgba(168, 85, 247, 0.16), transparent 35%),
+    #eef6ff;
+
+  background-size: 42px 42px;
+}
+
+body.light .navbar,
+body.light .feature-card,
+body.light .story-card,
+body.light .search-input {
+  background: rgba(255, 255, 255, 0.75);
+  color: #0f172a;
+}
+
+body.light .hero h1,
+body.light .stories-section h2,
+body.light .feature-card h3,
+body.light .story-content h3 {
+  color: #0f172a;
+}
+
+body.light .hero p,
+body.light .feature-card p,
+body.light .story-content p {
+  color: #475569;
+}
+
+body.light .nav-links a,
+body.light .nav-links button {
+  color: #0f172a;
 }
 
 /* RESPONSIVE */
@@ -323,4 +356,365 @@ textarea {
   .story-card {
     border-radius: 22px;
   }
+}
+/* AUTH PAGES */
+
+.auth-page {
+  min-height: calc(100vh - 130px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 460px;
+  padding: 42px;
+  border-radius: 32px;
+  background: rgba(15, 23, 42, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  backdrop-filter: blur(22px);
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.35);
+  text-align: center;
+}
+
+.auth-badge {
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: 999px;
+  background: #d1fae5;
+  color: #065f46;
+  font-weight: 800;
+  margin-bottom: 22px;
+}
+
+.auth-card h1 {
+  font-size: 36px;
+  color: #ffffff;
+  margin-bottom: 12px;
+  letter-spacing: -1px;
+}
+
+.auth-card p {
+  color: #94a3b8;
+  line-height: 1.6;
+  margin-bottom: 26px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.auth-form input {
+  width: 100%;
+  padding: 16px 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(2, 6, 23, 0.65);
+  color: white;
+  outline: none;
+  font-size: 15px;
+}
+
+.auth-form input::placeholder {
+  color: #94a3b8;
+}
+
+.auth-form input:focus {
+  border-color: rgba(34, 211, 238, 0.55);
+  box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.08);
+}
+
+.auth-btn {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.auth-switch {
+  margin-top: 24px;
+  margin-bottom: 0 !important;
+}
+
+.auth-switch a {
+  color: #22d3ee;
+  font-weight: 800;
+}
+
+body.light .auth-card {
+  background: rgba(255, 255, 255, 0.78);
+  color: #0f172a;
+}
+
+body.light .auth-card h1 {
+  color: #0f172a;
+}
+
+body.light .auth-card p {
+  color: #475569;
+}
+
+body.light .auth-form input {
+  background: rgba(255, 255, 255, 0.75);
+  color: #0f172a;
+}
+/* PROFILE PAGE */
+
+.profile-page,
+.write-page {
+  max-width: 1100px;
+  margin: 70px auto 100px;
+  padding: 0 24px;
+}
+
+.profile-hero {
+  padding: 50px;
+  border-radius: 34px;
+  background: rgba(15, 23, 42, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  text-align: center;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.35);
+}
+
+.profile-avatar {
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 22px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 42px;
+  font-weight: 900;
+  color: white;
+  background: linear-gradient(135deg, #06b6d4, #2563eb);
+}
+
+.profile-hero h1,
+.write-header h1 {
+  font-size: 44px;
+  color: white;
+  margin-bottom: 10px;
+}
+
+.profile-hero p,
+.write-header p {
+  color: #94a3b8;
+  margin-bottom: 28px;
+  font-size: 18px;
+}
+
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+  margin: 28px 0;
+}
+
+.stat-card,
+.profile-section,
+.write-card {
+  background: rgba(15, 23, 42, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 28px;
+  padding: 28px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+}
+
+.stat-card {
+  text-align: center;
+}
+
+.stat-card h2 {
+  font-size: 38px;
+  color: #22d3ee;
+}
+
+.stat-card p,
+.profile-story p {
+  color: #94a3b8;
+}
+
+.profile-section h2 {
+  font-size: 30px;
+  margin-bottom: 20px;
+}
+
+.profile-story {
+  padding: 20px;
+  border-radius: 20px;
+  background: rgba(2, 6, 23, 0.45);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.profile-story h3 {
+  color: white;
+}
+
+.profile-story a {
+  color: #22d3ee;
+  font-weight: 800;
+}
+
+/* WRITE PAGE */
+
+.write-header {
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.write-card {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.title-input {
+  font-size: 34px !important;
+  font-weight: 900;
+}
+
+.write-card input,
+.write-card textarea {
+  width: 100%;
+  padding: 18px 20px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: rgba(2, 6, 23, 0.58);
+  color: white;
+  outline: none;
+  font-size: 16px;
+}
+
+.write-card textarea {
+  min-height: 360px;
+  resize: vertical;
+  line-height: 1.8;
+}
+
+.write-card input::placeholder,
+.write-card textarea::placeholder {
+  color: #94a3b8;
+}
+
+.write-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.cover-preview {
+  width: 100%;
+  max-height: 360px;
+  object-fit: cover;
+  border-radius: 24px;
+}
+
+.write-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+}
+
+/* LIGHT MODE */
+
+body.light .profile-hero,
+body.light .stat-card,
+body.light .profile-section,
+body.light .write-card {
+  background: rgba(255, 255, 255, 0.78);
+}
+
+body.light .profile-hero h1,
+body.light .write-header h1,
+body.light .profile-section h2,
+body.light .profile-story h3 {
+  color: #0f172a;
+}
+
+body.light .write-card input,
+body.light .write-card textarea,
+body.light .profile-story {
+  background: rgba(255, 255, 255, 0.78);
+  color: #0f172a;
+}
+
+@media (max-width: 800px) {
+  .profile-stats,
+  .write-row {
+    grid-template-columns: 1fr;
+  }
+
+  .write-actions {
+    flex-direction: column;
+  }
+
+  .profile-hero h1,
+  .write-header h1 {
+    font-size: 34px;
+  }
+}
+/* SINGLE POST */
+
+.single-post-page {
+  max-width: 1000px;
+  margin: 70px auto 100px;
+  padding: 0 24px;
+}
+
+.single-cover {
+  width: 100%;
+  max-height: 420px;
+  object-fit: cover;
+  border-radius: 32px;
+  margin-bottom: 28px;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.35);
+}
+
+.single-post-card {
+  padding: 46px;
+  border-radius: 34px;
+  background: rgba(15, 23, 42, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.35);
+}
+
+.single-post-card h1 {
+  font-size: clamp(42px, 6vw, 72px);
+  line-height: 1.05;
+  letter-spacing: -3px;
+  margin: 18px 0;
+  color: white;
+}
+
+.single-meta {
+  color: #94a3b8;
+  margin-bottom: 34px;
+  font-weight: 600;
+}
+
+.single-content {
+  color: #cbd5e1;
+  font-size: 20px;
+  line-height: 1.9;
+}
+
+.single-content p {
+  margin-bottom: 22px;
+}
+
+body.light .single-post-card {
+  background: rgba(255, 255, 255, 0.78);
+}
+
+body.light .single-post-card h1 {
+  color: #0f172a;
+}
+
+body.light .single-content {
+  color: #334155;
 }

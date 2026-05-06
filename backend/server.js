@@ -5,7 +5,6 @@ import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import multer from "multer";
-import path from "path";
 
 import User from "./models/User.js";
 import Post from "./models/Post.js";
@@ -18,10 +17,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: [
-      "https://blog-website-vert-alpha.vercel.app",
-      "http://localhost:5173",
-    ],
+    origin: ["http://localhost:5173"],
     credentials: true,
   })
 );
@@ -29,17 +25,13 @@ app.use(
 app.use("/uploads", express.static("uploads"));
 
 mongoose
-  .connect(process.env.MONGO_URL)
+  .connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB Connected"))
   .catch((err) => console.log("❌ MongoDB Error:", err));
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
+  destination: (req, file, cb) => cb(null, "uploads/"),
+  filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname),
 });
 
 const upload = multer({ storage });
@@ -59,25 +51,20 @@ const auth = (req, res, next) => {
     const decoded = jwt.verify(cleanToken, process.env.JWT_SECRET);
     req.user = decoded;
     next();
-  } catch (err) {
+  } catch {
     return res.status(401).json({ message: "Invalid token" });
   }
 };
 
 app.get("/", (req, res) => {
-  res.send("Backend is running 🚀");
+  res.send("🚀 InsightFlow Backend Running");
 });
 
 app.post("/register", async (req, res) => {
   try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({ message: "Email and password required" });
-    }
+    const { name, email, password } = req.body;
 
     const existingUser = await User.findOne({ email });
-
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
@@ -85,14 +72,18 @@ app.post("/register", async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({
+      name,
       email,
       password: hashedPassword,
     });
 
-    res.status(201).json({
-      message: "User registered successfully",
-      user,
-    });
+    const token = jwt.sign(
+      { id: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.status(201).json({ token, user });
   } catch (err) {
     console.log("❌ Register Error:", err);
     res.status(500).json({ message: "Registration failed" });
@@ -104,31 +95,22 @@ app.post("/login", async (req, res) => {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
-
     if (!user) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
-
-    if (!isPasswordCorrect) {
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
     const token = jwt.sign(
-      {
-        id: user._id,
-        email: user.email,
-      },
+      { id: user._id, email: user.email },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
 
-    res.json({
-      message: "Login successful",
-      token,
-      user,
-    });
+    res.json({ token, user });
   } catch (err) {
     console.log("❌ Login Error:", err);
     res.status(500).json({ message: "Login failed" });
@@ -137,24 +119,16 @@ app.post("/login", async (req, res) => {
 
 app.post("/posts", auth, upload.single("coverImage"), async (req, res) => {
   try {
-    const { title, content } = req.body;
-
-    if (!title || !content) {
-      return res.status(400).json({ message: "Missing fields" });
-    }
-
-    const baseUrl =
-      process.env.NODE_ENV === "production"
-        ? "https://blog-backend-rn0w.onrender.com"
-        : "http://localhost:5000";
+    const { title, content, category } = req.body;
 
     const coverImage = req.file
-      ? `${baseUrl}/uploads/${req.file.filename}`
+      ? `http://localhost:5000/uploads/${req.file.filename}`
       : "";
 
     const post = await Post.create({
       title,
       content,
+      category,
       coverImage,
       author: req.user.email,
       userId: req.user.id,
@@ -187,66 +161,36 @@ app.get("/posts/:id", async (req, res) => {
 
     res.json(post);
   } catch (err) {
-    console.log("❌ Single Post Error:", err);
-    res.status(500).json({ message: "Error fetching post" });
+    console.log("❌ Fetch Single Post Error:", err);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
-app.put("/posts/:id", auth, upload.single("coverImage"), async (req, res) => {
+app.put("/posts/:id", auth, async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id);
-
-    if (!post) {
-      return res.status(404).json({ message: "Post not found" });
-    }
-
-    if (post.userId.toString() !== req.user.id) {
-      return res.status(403).json({ message: "You cannot edit this post" });
-    }
-
-    const baseUrl =
-      process.env.NODE_ENV === "production"
-        ? "https://blog-backend-rn0w.onrender.com"
-        : "http://localhost:5000";
-
-    const coverImage = req.file
-      ? `${baseUrl}/uploads/${req.file.filename}`
-      : post.coverImage;
-
     const updatedPost = await Post.findByIdAndUpdate(
       req.params.id,
       {
         title: req.body.title,
         content: req.body.content,
-        coverImage,
+        category: req.body.category,
       },
       { new: true }
     );
 
     res.json(updatedPost);
   } catch (err) {
-    console.log("❌ Update Post Error:", err);
+    console.log("❌ Update Error:", err);
     res.status(500).json({ message: "Update failed" });
   }
 });
 
 app.delete("/posts/:id", auth, async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id);
-
-    if (!post) {
-      return res.status(404).json({ message: "Post not found" });
-    }
-
-    if (post.userId.toString() !== req.user.id) {
-      return res.status(403).json({ message: "You cannot delete this post" });
-    }
-
     await Post.findByIdAndDelete(req.params.id);
-
-    res.json({ message: "Deleted" });
+    res.json({ message: "Post deleted successfully" });
   } catch (err) {
-    console.log("❌ Delete Post Error:", err);
+    console.log("❌ Delete Error:", err);
     res.status(500).json({ message: "Delete failed" });
   }
 });

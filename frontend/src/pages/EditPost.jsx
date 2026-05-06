@@ -1,101 +1,90 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
-import { motion } from "framer-motion";
-import toast from "react-hot-toast";
-import Editor from "../components/Editor";
+import axios from "axios";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function EditPost() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [coverImage, setCoverImage] = useState(null);
-  const [oldImage, setOldImage] = useState("");
+  const [post, setPost] = useState({
+    title: "",
+    category: "",
+    content: "",
+  });
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      toast.error("Please login first ❌");
-      navigate("/login");
-      return;
-    }
-
-    const fetchPost = async () => {
-      try {
-        const res = await axios.get(`https://blog-backend-rn0w.onrender.com/posts/${id}`);
-        setTitle(res.data.title);
-        setContent(res.data.content);
-        setOldImage(res.data.coverImage);
-      } catch {
-        toast.error("Could not load post ❌");
-      }
-    };
-
     fetchPost();
-  }, [id, navigate]);
+  }, [id]);
 
-  const updatePost = async (e) => {
+  const fetchPost = async () => {
+    const res = await axios.get(`http://localhost:5000/posts/${id}`);
+    setPost(res.data);
+  };
+
+  const handleChange = (e) => {
+    setPost({ ...post, [e.target.name]: e.target.value });
+  };
+
+  const handleUpdate = async (e) => {
     e.preventDefault();
 
     const token = localStorage.getItem("token");
 
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("content", content);
+    await axios.put(`http://localhost:5000/posts/${id}`, post, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-    if (coverImage) {
-      formData.append("coverImage", coverImage);
-    }
+    toast.success("Story updated ✨");
 
-    try {
-      await axios.put(`https://blog-backend-rn0w.onrender.com/posts/${id}`, formData, {
-        headers: { Authorization: token },
-      });
-
-      toast.success("Post updated ✅");
+    setTimeout(() => {
       navigate(`/post/${id}`);
-    } catch {
-      toast.error("Update failed ❌");
-    }
+    }, 800);
   };
 
   return (
-    <motion.div
-      className="form-box premium-editor glass"
-      initial={{ opacity: 0, y: 28 }}
-      animate={{ opacity: 1, y: 0 }}
-    >
-      <h2>Edit story</h2>
+    <section className="write-page">
+      <Toaster position="top-center" />
 
-      {oldImage && <img src={oldImage} alt="cover" className="edit-cover" />}
+      <div className="write-header">
+        <span className="auth-badge">✏️ Edit Story</span>
+        <h1>Update your story</h1>
+        <p>Refine your published article and keep your ideas fresh.</p>
+      </div>
 
-      <form className="form" onSubmit={updatePost}>
+      <form onSubmit={handleUpdate} className="write-card">
         <input
-          className="input title-input"
-          placeholder="Story title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          type="text"
+          name="title"
+          value={post.title}
+          onChange={handleChange}
+          className="title-input"
           required
         />
 
-        <label className="upload-box">
-          🖼 Change cover image
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setCoverImage(e.target.files[0])}
-          />
-        </label>
+        <input
+          type="text"
+          name="category"
+          value={post.category || ""}
+          onChange={handleChange}
+          placeholder="Category"
+        />
 
-        {coverImage && <p className="meta">Selected: {coverImage.name}</p>}
+        <textarea
+          name="content"
+          value={post.content}
+          onChange={handleChange}
+          required
+        />
 
-        <Editor content={content} setContent={setContent} />
-
-        <button className="btn btn-primary">Update Story</button>
+        <div className="write-actions">
+          <button type="submit" className="primary-btn">
+            Save Changes
+          </button>
+        </div>
       </form>
-    </motion.div>
+    </section>
   );
 }

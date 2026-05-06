@@ -1,138 +1,64 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
 
 export default function Profile() {
-  const [posts, setPosts] = useState([]);
-
-  const navigate = useNavigate();
-
-  const token = localStorage.getItem("token");
-
-  const stripHtml = (html = "") => html.replace(/<[^>]*>?/gm, "");
-
-  const fetchMyPosts = async () => {
-    if (!token) {
-      toast.error("Please login first ❌");
-      navigate("/login");
-      return;
-    }
-
-    try {
-      const res = await axios.get("https://blog-backend-rn0w.onrender.com/my-posts", {
-        headers: { Authorization: token },
-      });
-
-      setPosts(res.data);
-    } catch {
-      toast.error("Please login again ❌");
-      navigate("/login");
-    }
+  const user = JSON.parse(localStorage.getItem("user")) || {
+    name: "Avni Singhal",
+    email: "avni@insightflow.com",
   };
-
-  const deletePost = async (id) => {
-    try {
-      await axios.delete(`https://blog-backend-rn0w.onrender.com/posts/${id}`, {
-        headers: { Authorization: token },
-      });
-
-      toast.success("Post deleted ✅");
-      fetchMyPosts();
-    } catch {
-      toast.error("You cannot delete this post ❌");
-    }
-  };
-
-  useEffect(() => {
-    fetchMyPosts();
-  }, []);
 
   return (
-    <main className="page-container profile-page">
-      <section className="profile-header">
-        <div className="avatar">IF</div>
-
-        <div>
-          <h1>Your Dashboard</h1>
-          <p>Manage your stories, edits, likes, and comments.</p>
+    <section className="profile-page">
+      <div className="profile-hero">
+        <div className="profile-avatar">
+          {user.name ? user.name.charAt(0).toUpperCase() : "A"}
         </div>
-      </section>
+
+        <h1>{user.name || "Avni Singhal"}</h1>
+        <p>{user.email || "avni@insightflow.com"}</p>
+
+        <Link to="/write">
+          <button className="primary-btn">Write New Story</button>
+        </Link>
+      </div>
 
       <div className="profile-stats">
         <div className="stat-card">
-          <h3>{posts.length}</h3>
-          <p>Total Posts</p>
+          <h2>12</h2>
+          <p>Stories</p>
         </div>
 
         <div className="stat-card">
-          <h3>
-            {posts.reduce((total, post) => total + (post.likes?.length || 0), 0)}
-          </h3>
-          <p>Total Likes</p>
+          <h2>248</h2>
+          <p>Reads</p>
         </div>
 
         <div className="stat-card">
-          <h3>
-            {posts.reduce(
-              (total, post) => total + (post.comments?.length || 0),
-              0
-            )}
-          </h3>
-          <p>Total Comments</p>
+          <h2>36</h2>
+          <p>Likes</p>
         </div>
       </div>
 
-      <h2 className="section-title">My Stories</h2>
+      <div className="profile-section">
+        <h2>Your Recent Stories</h2>
 
-      {posts.length === 0 ? (
-        <div className="empty-state">
-          You haven’t written anything yet. Click <b>Write</b> to publish your
-          first story.
+        <div className="profile-story">
+          <div>
+            <h3>Building Modern React Apps</h3>
+            <p>Draft • Updated today</p>
+          </div>
+
+          <Link to="/write">Edit</Link>
         </div>
-      ) : (
-        posts.map((post) => (
-          <article className="card" key={post._id}>
-            {post.coverImage && (
-              <Link to={`/post/${post._id}`}>
-                <img
-                  src={post.coverImage}
-                  alt={post.title}
-                  className="post-cover"
-                />
-              </Link>
-            )}
 
-            <Link to={`/post/${post._id}`}>
-              <h2>{post.title}</h2>
-            </Link>
+        <div className="profile-story">
+          <div>
+            <h3>Designing Clean Interfaces</h3>
+            <p>Published • 2 days ago</p>
+          </div>
 
-            <p>{stripHtml(post.content).slice(0, 160)}...</p>
-
-            <div className="post-stats">
-              <span>❤️ {post.likes?.length || 0}</span>
-              <span>💬 {post.comments?.length || 0} comments</span>
-            </div>
-
-            <div className="actions">
-              <Link to={`/post/${post._id}`}>
-                <button className="btn btn-outline">View</button>
-              </Link>
-
-              <Link to={`/edit/${post._id}`}>
-                <button className="btn btn-primary">Edit</button>
-              </Link>
-
-              <button
-                className="btn btn-dark"
-                onClick={() => deletePost(post._id)}
-              >
-                Delete
-              </button>
-            </div>
-          </article>
-        ))
-      )}
-    </main>
+          <Link to="/write">Edit</Link>
+        </div>
+      </div>
+    </section>
   );
 }

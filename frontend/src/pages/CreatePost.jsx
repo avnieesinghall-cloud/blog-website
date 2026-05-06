@@ -1,81 +1,92 @@
 import { useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import toast from "react-hot-toast";
-import Editor from "../components/Editor";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function CreatePost() {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [coverImage, setCoverImage] = useState(null);
+  const [post, setPost] = useState({
+    title: "",
+    category: "",
+    cover: "",
+    content: "",
+  });
 
-  const navigate = useNavigate();
+  const handleChange = (e) => {
+    setPost({ ...post, [e.target.name]: e.target.value });
+  };
 
-  const submit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
-    const token = localStorage.getItem("token");
+    toast.success("Story saved successfully ✨");
 
-    if (!token) {
-      toast.error("Please login first ❌");
-      navigate("/login");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("content", content);
-
-    if (coverImage) {
-      formData.append("coverImage", coverImage);
-    }
-
-    try {
-      await axios.post("https://blog-backend-rn0w.onrender.com/posts", formData, {
-        headers: { Authorization: token },
-      });
-
-      toast.success("Post published 🚀");
-      navigate("/");
-    } catch (err) {
-      console.log(err.response?.data || err.message);
-      toast.error("Post creation failed ❌");
-    }
+    console.log(post);
   };
 
   return (
-    <motion.div
-      className="form-box premium-editor glass"
-      initial={{ opacity: 0, y: 28 }}
-      animate={{ opacity: 1, y: 0 }}
-    >
-      <h2>Write a new story</h2>
+    <section className="write-page">
+      <Toaster position="top-center" />
 
-      <form className="form" onSubmit={submit}>
+      <div className="write-header">
+        <div>
+          <span className="auth-badge">✍️ Premium Editor</span>
+          <h1>Write your story</h1>
+          <p>
+            Create beautiful, clean, and readable posts with InsightFlow’s
+            modern writing space.
+          </p>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit} className="write-card">
         <input
-          className="input title-input"
-          placeholder="Story title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          type="text"
+          name="title"
+          placeholder="Story title..."
+          value={post.title}
+          onChange={handleChange}
+          className="title-input"
           required
         />
 
-        <label className="upload-box">
-          🖼 Upload cover image
+        <div className="write-row">
           <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setCoverImage(e.target.files[0])}
+            type="text"
+            name="category"
+            placeholder="Category e.g. React, UI Design"
+            value={post.category}
+            onChange={handleChange}
           />
-        </label>
 
-        {coverImage && <p className="meta">Selected: {coverImage.name}</p>}
+          <input
+            type="text"
+            name="cover"
+            placeholder="Cover image URL"
+            value={post.cover}
+            onChange={handleChange}
+          />
+        </div>
 
-        <Editor content={content} setContent={setContent} />
+        {post.cover && (
+          <img src={post.cover} alt="Cover preview" className="cover-preview" />
+        )}
 
-        <button className="btn btn-primary">Publish Story</button>
+        <textarea
+          name="content"
+          placeholder="Start writing your story here..."
+          value={post.content}
+          onChange={handleChange}
+          required
+        />
+
+        <div className="write-actions">
+          <button type="button" className="secondary-btn">
+            Save Draft
+          </button>
+
+          <button type="submit" className="primary-btn">
+            Publish Story
+          </button>
+        </div>
       </form>
-    </motion.div>
+    </section>
   );
 }
