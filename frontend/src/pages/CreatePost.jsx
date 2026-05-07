@@ -10,7 +10,7 @@ export default function CreatePost() {
     content: "",
   });
 
-  const API_URL = "https://insightflow-backend-7vjp.onrender.com";
+  const API_URL = "https://blog-backend-rn0w.onrender.com";
 
   const handleChange = (e) => {
     setPost({

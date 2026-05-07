@@ -9,7 +9,7 @@ export default function SinglePost() {
 
   const [post, setPost] = useState(null);
 
-  const API_URL = "https://insightflow-backend-7vjp.onrender.com";
+  const API_URL = "https://blog-backend-rn0w.onrender.com";
 
   useEffect(() => {
     fetchPost();

@@ -10,7 +10,7 @@ export default function Profile() {
     email: "avni@techy.com",
   };
 
-  const API_URL = "https://insightflow-backend-7vjp.onrender.com";
+  const API_URL = "https://blog-backend-rn0w.onrender.com";
 
   useEffect(() => {
     fetchPosts();

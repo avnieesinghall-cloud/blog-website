@@ -6,7 +6,7 @@ export default function Home() {
   const [posts, setPosts] = useState([]);
   const [search, setSearch] = useState("");
 
-  const API_URL = "https://insightflow-backend-7vjp.onrender.com";
+  const API_URL = "https://blog-backend-rn0w.onrender.com";
 
   useEffect(() => {
     fetchPosts();
