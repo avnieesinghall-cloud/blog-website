@@ -13,7 +13,10 @@ export default function CreatePost() {
   const API_URL = "https://insightflow-backend-7vjp.onrender.com";
 
   const handleChange = (e) => {
-    setPost({ ...post, [e.target.name]: e.target.value });
+    setPost({
+      ...post,
+      [e.target.name]: e.target.value,
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -21,6 +24,11 @@ export default function CreatePost() {
 
     try {
       const token = localStorage.getItem("token");
+
+      if (!token) {
+        toast.error("Please login first");
+        return;
+      }
 
       await axios.post(
         `${API_URL}/posts`,
@@ -46,8 +54,8 @@ export default function CreatePost() {
         content: "",
       });
     } catch (err) {
-      console.log(err);
-      toast.error("Story could not be saved");
+      console.log("Create post error:", err);
+      toast.error(err.response?.data?.message || "Story could not be saved");
     }
   };
 
@@ -58,7 +66,9 @@ export default function CreatePost() {
       <div className="write-header">
         <div>
           <span className="auth-badge">✍️ Premium Editor</span>
+
           <h1>Write your story</h1>
+
           <p>
             Create beautiful, clean, and readable posts with InsightFlow’s
             modern writing space.

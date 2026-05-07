@@ -20,6 +20,7 @@ app.use(
     origin: [
       "http://localhost:5173",
       "https://blog-website-git-main-avni-singhals-projects-e379242d.vercel.app",
+      "https://blog-website-vert-alpha.vercel.app",
     ],
     credentials: true,
   })
@@ -52,8 +53,8 @@ const auth = (req, res, next) => {
       : token;
 
     const decoded = jwt.verify(cleanToken, process.env.JWT_SECRET);
-
     req.user = decoded;
+
     next();
   } catch (err) {
     return res.status(401).json({ message: "Invalid token" });
@@ -149,22 +150,28 @@ app.post("/login", async (req, res) => {
 /* CREATE POST */
 app.post("/posts", auth, upload.single("coverImage"), async (req, res) => {
   try {
-    const { title, content, category } = req.body;
+    const { title, content, category, coverImage, cover } = req.body;
+
+    if (!title || !content) {
+      return res.status(400).json({
+        message: "Title and content are required",
+      });
+    }
 
     const baseUrl =
       process.env.NODE_ENV === "production"
         ? "https://insightflow-backend-7vjp.onrender.com"
         : "http://localhost:5000";
 
-    const coverImage = req.file
+    const finalCoverImage = req.file
       ? `${baseUrl}/uploads/${req.file.filename}`
-      : req.body.coverImage || req.body.cover || "";
+      : coverImage || cover || "";
 
     const post = await Post.create({
       title,
       content,
       category,
-      coverImage,
+      coverImage: finalCoverImage,
       author: req.user.email,
       userId: req.user.id,
     });
@@ -216,22 +223,24 @@ app.put("/posts/:id", auth, upload.single("coverImage"), async (req, res) => {
       return res.status(403).json({ message: "You cannot edit this post" });
     }
 
+    const { title, content, category, coverImage, cover } = req.body;
+
     const baseUrl =
       process.env.NODE_ENV === "production"
         ? "https://insightflow-backend-7vjp.onrender.com"
         : "http://localhost:5000";
 
-    const coverImage = req.file
+    const finalCoverImage = req.file
       ? `${baseUrl}/uploads/${req.file.filename}`
-      : req.body.coverImage || req.body.cover || post.coverImage;
+      : coverImage || cover || post.coverImage;
 
     const updatedPost = await Post.findByIdAndUpdate(
       req.params.id,
       {
-        title: req.body.title,
-        content: req.body.content,
-        category: req.body.category,
-        coverImage,
+        title,
+        content,
+        category,
+        coverImage: finalCoverImage,
       },
       { new: true }
     );
