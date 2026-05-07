@@ -1,37 +1,37 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import Navbar from "./components/Navbar.jsx";
+import Navbar from "./components/Navbar";
 
-import Home from "./pages/Home.jsx";
-import Login from "./pages/Login.jsx";
-import Register from "./pages/Register.jsx";
-import CreatePost from "./pages/CreatePost.jsx";
-import Profile from "./pages/Profile.jsx";
-import SinglePost from "./pages/SinglePost.jsx";
-import EditPost from "./pages/EditPost.jsx";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Write from "./pages/Write";
+import SinglePost from "./pages/SinglePost";
+import EditPost from "./pages/EditPost";
+import Profile from "./pages/Profile";
 
-export default function App() {
+function App() {
   return (
     <BrowserRouter>
-      <div className="app">
-        <Navbar />
+      <Navbar />
 
-        <Routes>
-          <Route path="/" element={<Home />} />
+      <Routes>
+        <Route path="/" element={<Home />} />
 
-          <Route path="/write" element={<CreatePost />} />
+        <Route path="/login" element={<Login />} />
 
-          <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-          <Route path="/register" element={<Register />} />
+        <Route path="/write" element={<Write />} />
 
-          <Route path="/profile" element={<Profile />} />
+        <Route path="/profile" element={<Profile />} />
 
-          <Route path="/post/:id" element={<SinglePost />} />
+        <Route path="/post/:id" element={<SinglePost />} />
 
-          <Route path="/edit/:id" element={<EditPost />} />
-        </Routes>
-      </div>
+        <Route path="/edit/:id" element={<EditPost />} />
+      </Routes>
     </BrowserRouter>
   );
 }
+
+export default App;
