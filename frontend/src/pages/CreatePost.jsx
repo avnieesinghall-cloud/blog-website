@@ -1,5 +1,6 @@
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import axios from "axios";
 
 export default function CreatePost() {
   const [post, setPost] = useState({
@@ -9,16 +10,45 @@ export default function CreatePost() {
     content: "",
   });
 
+  const API_URL = "https://insightflow-backend-7vjp.onrender.com";
+
   const handleChange = (e) => {
     setPost({ ...post, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    toast.success("Story saved successfully ✨");
+    try {
+      const token = localStorage.getItem("token");
 
-    console.log(post);
+      await axios.post(
+        `${API_URL}/posts`,
+        {
+          title: post.title,
+          category: post.category,
+          coverImage: post.cover,
+          content: post.content,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      toast.success("Story saved successfully ✨");
+
+      setPost({
+        title: "",
+        category: "",
+        cover: "",
+        content: "",
+      });
+    } catch (err) {
+      console.log(err);
+      toast.error("Story could not be saved");
+    }
   };
 
   return (
