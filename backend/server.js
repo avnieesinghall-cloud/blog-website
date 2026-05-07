@@ -17,7 +17,10 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: ["http://localhost:5173"],
+    origin: [
+      "http://localhost:5173",
+      "https://blog-website-git-main-avni-singhals-projects-e379242d.vercel.app",
+    ],
     credentials: true,
   })
 );
@@ -49,9 +52,10 @@ const auth = (req, res, next) => {
       : token;
 
     const decoded = jwt.verify(cleanToken, process.env.JWT_SECRET);
+
     req.user = decoded;
     next();
-  } catch {
+  } catch (err) {
     return res.status(401).json({ message: "Invalid token" });
   }
 };
@@ -60,11 +64,13 @@ app.get("/", (req, res) => {
   res.send("🚀 InsightFlow Backend Running");
 });
 
+/* REGISTER */
 app.post("/register", async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
     const existingUser = await User.findOne({ email });
+
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
@@ -78,52 +84,81 @@ app.post("/register", async (req, res) => {
     });
 
     const token = jwt.sign(
-      { id: user._id, email: user.email },
+      {
+        id: user._id,
+        email: user.email,
+      },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
 
-    res.status(201).json({ token, user });
+    res.status(201).json({
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
   } catch (err) {
     console.log("❌ Register Error:", err);
     res.status(500).json({ message: "Registration failed" });
   }
 });
 
+/* LOGIN */
 app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
+
     if (!user) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
+
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
     const token = jwt.sign(
-      { id: user._id, email: user.email },
+      {
+        id: user._id,
+        email: user.email,
+      },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
 
-    res.json({ token, user });
+    res.json({
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
   } catch (err) {
     console.log("❌ Login Error:", err);
     res.status(500).json({ message: "Login failed" });
   }
 });
 
+/* CREATE POST */
 app.post("/posts", auth, upload.single("coverImage"), async (req, res) => {
   try {
     const { title, content, category } = req.body;
 
+    const baseUrl =
+      process.env.NODE_ENV === "production"
+        ? "https://insightflow-backend-7vjp.onrender.com"
+        : "http://localhost:5000";
+
     const coverImage = req.file
-      ? `http://localhost:5000/uploads/${req.file.filename}`
-      : "";
+      ? `${baseUrl}/uploads/${req.file.filename}`
+      : req.body.coverImage || req.body.cover || "";
 
     const post = await Post.create({
       title,
@@ -141,6 +176,7 @@ app.post("/posts", auth, upload.single("coverImage"), async (req, res) => {
   }
 });
 
+/* GET ALL POSTS */
 app.get("/posts", async (req, res) => {
   try {
     const posts = await Post.find().sort({ createdAt: -1 });
@@ -151,6 +187,7 @@ app.get("/posts", async (req, res) => {
   }
 });
 
+/* GET SINGLE POST */
 app.get("/posts/:id", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -166,14 +203,35 @@ app.get("/posts/:id", async (req, res) => {
   }
 });
 
-app.put("/posts/:id", auth, async (req, res) => {
+/* UPDATE POST */
+app.put("/posts/:id", auth, upload.single("coverImage"), async (req, res) => {
   try {
+    const post = await Post.findById(req.params.id);
+
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    if (post.userId?.toString() !== req.user.id) {
+      return res.status(403).json({ message: "You cannot edit this post" });
+    }
+
+    const baseUrl =
+      process.env.NODE_ENV === "production"
+        ? "https://insightflow-backend-7vjp.onrender.com"
+        : "http://localhost:5000";
+
+    const coverImage = req.file
+      ? `${baseUrl}/uploads/${req.file.filename}`
+      : req.body.coverImage || req.body.cover || post.coverImage;
+
     const updatedPost = await Post.findByIdAndUpdate(
       req.params.id,
       {
         title: req.body.title,
         content: req.body.content,
         category: req.body.category,
+        coverImage,
       },
       { new: true }
     );
@@ -185,9 +243,21 @@ app.put("/posts/:id", auth, async (req, res) => {
   }
 });
 
+/* DELETE POST */
 app.delete("/posts/:id", auth, async (req, res) => {
   try {
+    const post = await Post.findById(req.params.id);
+
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    if (post.userId?.toString() !== req.user.id) {
+      return res.status(403).json({ message: "You cannot delete this post" });
+    }
+
     await Post.findByIdAndDelete(req.params.id);
+
     res.json({ message: "Post deleted successfully" });
   } catch (err) {
     console.log("❌ Delete Error:", err);
