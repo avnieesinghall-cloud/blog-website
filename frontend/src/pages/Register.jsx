@@ -14,18 +14,24 @@ export default function Register() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    localStorage.setItem("token", "demo-token");
-    localStorage.setItem(
-      "user",
-      JSON.stringify({ name: form.name, email: form.email })
+  try {
+    const res = await axios.post(
+      "https://blog-backend-rn0w.onrender.com/register",
+      form
     );
 
-    navigate("/");
-  };
+    localStorage.setItem("token", res.data.token);
+    localStorage.setItem("user", JSON.stringify(res.data.user));
 
+    navigate("/");
+  } catch (err) {
+    console.log(err);
+    alert("Registration failed");
+  }
+};
   return (
     <section className="auth-page">
       <div className="auth-card">
