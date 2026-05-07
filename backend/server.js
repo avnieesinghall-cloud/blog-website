@@ -13,26 +13,35 @@ dotenv.config();
 
 const app = express();
 
+/* MIDDLEWARE */
 app.use(express.json());
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://blog-website-git-main-avni-singhals-projects-e379242d.vercel.app",
-      "https://blog-website-vert-alpha.vercel.app",
-    ],
+    origin: function (origin, callback) {
+      if (
+        !origin ||
+        origin === "http://localhost:5173" ||
+        origin.endsWith(".vercel.app")
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
 
 app.use("/uploads", express.static("uploads"));
 
+/* DATABASE */
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB Connected"))
   .catch((err) => console.log("❌ MongoDB Error:", err));
 
+/* FILE UPLOAD */
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "uploads/"),
   filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname),
@@ -40,6 +49,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
+/* AUTH MIDDLEWARE */
 const auth = (req, res, next) => {
   const token = req.headers.authorization;
 
@@ -61,6 +71,7 @@ const auth = (req, res, next) => {
   }
 };
 
+/* TEST ROUTE */
 app.get("/", (req, res) => {
   res.send("🚀 InsightFlow Backend Running");
 });
@@ -274,6 +285,7 @@ app.delete("/posts/:id", auth, async (req, res) => {
   }
 });
 
+/* START SERVER */
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
