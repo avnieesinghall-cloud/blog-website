@@ -735,3 +735,20 @@ body.light .single-content {
   background: rgba(239, 68, 68, 0.28);
   transform: translateY(-3px);
 }
+.auth-card input {
+  display: block;
+  width: 100%;
+  margin: 14px 0;
+  padding: 16px 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(2, 8, 23, 0.85);
+  color: white;
+  font-size: 15px;
+  outline: none;
+}
+
+.auth-card button {
+  width: 100%;
+  margin-top: 18px;
+}

@@ -15,10 +15,7 @@ export default function Register() {
   const API_URL = "https://blog-backend-rn0w.onrender.com";
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
@@ -50,7 +47,9 @@ export default function Register() {
 
         <h1>Create your account</h1>
 
-        <p>Start publishing clean, beautiful stories with a premium writing space.</p>
+        <p>
+          Start publishing clean, beautiful stories with a premium writing space.
+        </p>
 
         <input
           type="text"
